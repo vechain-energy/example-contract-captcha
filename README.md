@@ -236,6 +236,10 @@ return new Response(
 );
 ```
 
+The returned information can be passed to the smart contract as a parameter. Which can then verify the backend as signer and trust it to have validated a CAPTCHA.
+Using the unique `dataHash`, it can also prevent a user from using the same token twice.
+
+
 # Smart Contract with Hardhat & OpenZeppelin
 
 OpenZeppelin and Hardhat are both veterans when it comes to smart contract development. Hardhat is a solid development environment that allows for easy testing and deployment of smart contracts.
@@ -265,6 +269,42 @@ Configure the contracts address in the Web Apps and the backend signers environm
     - https://sourcify.dev/#/lookup/0xfA5738AEeC969684a883362Fb25fEB8cf98A94A2
 - And accepts signed messages from `0x4a02B6aed4053550Eaa7D9217DBbEa8e3649D05e`
 - The signers private key is `0xeee5b56c659542f88e9f14385e848a5a0176ad26fd1d0a78df434666736d4ff3`
+
+
+The example contract contains the function:
+
+```solidity
+function executeWithAuthorization(
+    bytes32 dataHash,
+    uint256 validAfter,
+    uint256 validBefore,
+    bytes calldata signature
+)
+```
+
+.. which can be called with the return values from the backend signer:
+
+```ts
+import { clauseBuilder, FunctionFragment } from '@vechain/sdk-core';
+
+//..
+
+const clauses = [
+    {
+        ...clauseBuilder.functionInteraction(
+            CONTRACT_ADDRESS,
+            'function executeWithAuthorization(bytes32 dataHash,uint256 validAfter,uint256 validBefore,bytes calldata signature)' as unknown as FunctionFragment,
+            [
+                captchaValidation.dataHash,
+                captchaValidation.validAfter,
+                captchaValidation.validBefore,
+                captchaValidation.signature
+            ]
+        ),
+        value: '0x0',
+    }
+]
+```
 
 ## EIP-712
 
