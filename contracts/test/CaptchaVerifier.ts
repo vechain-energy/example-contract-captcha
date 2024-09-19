@@ -25,7 +25,7 @@ describe("CaptchaVerifier", function () {
 
             // Ensure validAfter is in the past and validBefore is in the future
             const validAfter = 0
-            const validBefore = Math.floor(Date.now() / 1000) + 3600 * 10
+            const validBefore = Math.floor(Date.now() / 1000) + 3600
             const dataHash = ethers.keccak256(ethers.toUtf8Bytes("test"))
 
             // Get the current chainId from the network
