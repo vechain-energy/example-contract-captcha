@@ -261,8 +261,8 @@ jq .address deployments/vechain_testnet/CaptchaVerifier.json
 
 Configure the contracts address in the Web Apps and the backend signers environment variables.
 
-- The example contract is deployed on TestNet on: `0x2Eca0Ae09B1421F6cfAedAC1e4693b232552144f`
-    - https://sourcify.dev/#/lookup/0x2Eca0Ae09B1421F6cfAedAC1e4693b232552144f
+- The example contract is deployed on TestNet on: `0xfA5738AEeC969684a883362Fb25fEB8cf98A94A2`
+    - https://sourcify.dev/#/lookup/0xfA5738AEeC969684a883362Fb25fEB8cf98A94A2
 - And accepts signed messages from `0x4a02B6aed4053550Eaa7D9217DBbEa8e3649D05e`
 - The signers private key is `0xeee5b56c659542f88e9f14385e848a5a0176ad26fd1d0a78df434666736d4ff3`
 

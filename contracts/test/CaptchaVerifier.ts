@@ -1,7 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { encodeBytes32String } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 
 describe("CaptchaVerifier", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -26,13 +25,15 @@ describe("CaptchaVerifier", function () {
 
             // Ensure validAfter is in the past and validBefore is in the future
             const validAfter = 0
-            const validBefore = Math.floor(Date.now() / 1000) + 3600
-            const tokenHash = ethers.keccak256(ethers.toUtf8Bytes("test"))
+            const validBefore = Math.floor(Date.now() / 1000) + 3600 * 10
+            const dataHash = ethers.keccak256(ethers.toUtf8Bytes("test"))
 
+            // Get the current chainId from the network
+            const chainId = BigInt(await network.provider.send("eth_chainId"));
             const domain = {
                 name: "CaptchaVerifier",
                 version: "1",
-                chainId: 1337, // Hardhat's default chainId
+                chainId,
                 verifyingContract: await verifier.getAddress()
             };
 
@@ -44,19 +45,14 @@ describe("CaptchaVerifier", function () {
                 ]
             };
 
-            const value = {
-                dataHash: tokenHash,
-                validAfter,
-                validBefore
-            };
-
-            const updatedSignature = await signer.signTypedData(domain, types, value);
+            const value = { dataHash, validAfter, validBefore };
+            const signature = await signer.signTypedData(domain, types, value);
 
             await expect(verifier.executeWithAuthorization(
                 value.dataHash,
                 value.validAfter,
                 value.validBefore,
-                updatedSignature
+                signature
             )).to.not.be.reverted;
         });
 
@@ -67,12 +63,13 @@ describe("CaptchaVerifier", function () {
             // Ensure validAfter is in the past and validBefore is in the future
             const validAfter = 0
             const validBefore = Math.floor(Date.now() / 1000) + 3600
-            const tokenHash = ethers.keccak256(ethers.toUtf8Bytes("test"))
+            const dataHash = ethers.keccak256(ethers.toUtf8Bytes("test"))
 
+            const chainId = BigInt(await network.provider.send("eth_chainId"));
             const domain = {
                 name: "CaptchaVerifier",
                 version: "INVALID", // turn invalid by just changing the version
-                chainId: 1337, // Hardhat's default chainId
+                chainId,
                 verifyingContract: await verifier.getAddress()
             };
 
@@ -84,19 +81,15 @@ describe("CaptchaVerifier", function () {
                 ]
             };
 
-            const value = {
-                dataHash: tokenHash,
-                validAfter,
-                validBefore
-            };
+            const value = { dataHash, validAfter, validBefore };
 
-            const updatedSignature = await signer.signTypedData(domain, types, value);
+            const signature = await signer.signTypedData(domain, types, value);
 
             await expect(verifier.executeWithAuthorization(
                 value.dataHash,
                 value.validAfter,
                 value.validBefore,
-                updatedSignature
+                signature
             )).to.be.revertedWith("Signature is invalid");
         });
     });

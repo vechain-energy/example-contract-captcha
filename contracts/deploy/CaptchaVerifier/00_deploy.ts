@@ -4,7 +4,7 @@ import { CaptchaVerifier } from '../../typechain-types';
 import { ethers } from 'hardhat';
 
 // @TODO: replace with your own address
-const BACKEND_SIGNER_ADDRESS = ethers.getAddress('0x4a02B6aed4053550Eaa7D9217DBbEa8e3649D05E'.toLowerCase())
+const BACKEND_SIGNER_ADDRESS = ethers.getAddress('0x4a02B6aed4053550Eaa7D9217DBbEa8e3649D05e'.toLowerCase())
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // get access to your named accounts, check hardhat.config.ts on your configuration
