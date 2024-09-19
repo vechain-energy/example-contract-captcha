@@ -51,7 +51,7 @@ It will be available on http://localhost:1234
 Register a free CloudFlare account and setup a CAPTCHA on https://www.cloudflare.com/products/turnstile/
 There are multiple options to configure improve the user experience and prevent abuse at the same time.
 
-![image](./docs/Turnstile-Widget.png)
+![Turnstile Widget Configuration](./docs/Turnstile-Widget.png)
 
 ## React Turnstile
 
@@ -90,6 +90,15 @@ const handleCaptchaSuccess = (token: string) => {
   onSuccess={handleCaptchaSuccess}
 />;
 ```
+
+The ability to hide the widget removes the noise often seen CAPTCHAs that need to be manually solved. Try the configuration options that suites your needs best.
+
+![Web App](./docs/Web-App.png)
+
+Find more details about the options in the docs of:
+
+- [React Turnstile render options](https://docs.page/marsidev/react-turnstile/props#render-options)
+- [Cloudflare Turnstile configuration by code](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/#execution-modes)
 
 ## Result
 
@@ -320,11 +329,11 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 //..
 
-        // recover the signer address from the signature
-        address recoveredAddress = ECDSA.recover(digest, signature);
+// recover the signer address from the signature
+address recoveredAddress = ECDSA.recover(digest, signature);
 
-        // if the recovered address is different from the required signer, the signature was invalid
-        require(recoveredAddress == requiredSigner, "Signature is invalid");
+// if the recovered address is different from the required signer, the signature was invalid
+require(recoveredAddress == requiredSigner, "Signature is invalid");
 
 ```
 
