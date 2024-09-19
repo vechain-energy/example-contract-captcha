@@ -55,7 +55,7 @@ abstract contract HashVerifier is EIP712 {
         bytes32 structHash = keccak256(
             abi.encode(
                 keccak256(
-                    "VerifyHash(bytes32 dataHash, uint256 validAfter, uint256 validBefore)"
+                    "VerifyHash(bytes32 dataHash,uint256 validAfter,uint256 validBefore)"
                 ),
                 dataHash,
                 validAfter,
