@@ -53,13 +53,12 @@ export default function Captcha() {
                 {
                     ...clauseBuilder.functionInteraction(
                         CONTRACT_ADDRESS,
-                        'function executeWithAuthorization(bytes32 dataHash,uint256 validAfter,uint256 validBefore,bytes calldata signature, address requiredSigner)' as unknown as FunctionFragment,
+                        'function executeWithAuthorization(bytes32 dataHash,uint256 validAfter,uint256 validBefore,bytes calldata signature)' as unknown as FunctionFragment,
                         [
                             captchaValidation.dataHash,
                             captchaValidation.validAfter,
                             captchaValidation.validBefore,
-                            captchaValidation.signature,
-                            captchaValidation.signer
+                            captchaValidation.signature
                         ]
                     ),
                     value: '0x0',
@@ -133,8 +132,8 @@ export default function Captcha() {
 
             <div>
                 <button
-                    className={`w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 ${isLoading ? 'opacity-25' : ''}`}
-                    disabled={isLoading}
+                    className={`w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 ${isLoading || !captchaToken ? 'opacity-25' : ''}`}
+                    disabled={isLoading || !captchaToken}
                     onClick={handleSend}
                 >
                     Transact with Contract
