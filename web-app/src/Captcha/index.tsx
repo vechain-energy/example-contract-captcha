@@ -14,8 +14,10 @@ export default function Captcha() {
     // and access to connex for interaction with vechain
     const connex = useConnex()
 
-    // track captcha status
-    const [catpchaStatus, setCaptchaStatus] = React.useState('')
+    // track captcha status for simple UI status display
+    const [catpchaStatus, setCaptchaStatus] = React.useState('loading')
+
+    // track captcha token for backend verification
     const [captchaToken, setCaptchaToken] = React.useState('')
     const handleCaptchaSuccess = (token: string) => {
         setCaptchaStatus('solved')
@@ -23,27 +25,29 @@ export default function Captcha() {
     }
 
     // state for sending status
+    const [isLoading, setIsLoading] = React.useState(false)
     const [txId, setTxId] = React.useState<string>('')
     const [error, setError] = React.useState<string>('')
     const handleSend = async () => {
-        if (!account || !CONTRACT_ADDRESS) { return }
-
+        setIsLoading(true)
         try {
             setError('')
 
-            const validBefore = Math.floor(Date.now() / 1000) + 3600
-            const validAfter = 0
             const captchaValidation = await fetch(`${BACKEND_SIGNER_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    token: captchaToken,
-                    validBefore,
-                    validAfter
+                    token: captchaToken
                 })
-            }).then(res => res.json()) as { dataHash: string, signature: string, signer: string }
+            }).then(res => res.json()) as {
+                dataHash: string,
+                signature: string,
+                signer: string,
+                validAfter: number,
+                validBefore: number
+            }
 
             const clauses = [
                 {
@@ -52,8 +56,8 @@ export default function Captcha() {
                         'function executeWithAuthorization(bytes32 dataHash,uint256 validAfter,uint256 validBefore,bytes calldata signature, address requiredSigner)' as unknown as FunctionFragment,
                         [
                             captchaValidation.dataHash,
-                            validAfter,
-                            validBefore,
+                            captchaValidation.validAfter,
+                            captchaValidation.validBefore,
                             captchaValidation.signature,
                             captchaValidation.signer
                         ]
@@ -92,43 +96,50 @@ export default function Captcha() {
         catch (err) {
             setError(String(err))
         }
+        finally {
+            setIsLoading(false)
+        }
     }
 
 
     if (!account) { return 'Please connect your wallet to continue.' }
 
-    // sending is disabled if there is no signed in account or no amount entered
-    const canSend = Boolean(account)
     return (
-        <div className='space-y-4 max-w-lg'>
-            <div className='text-xl font-semibold'>{APP_TITLE}</div>
-            <p>{APP_DESCRIPTION}</p>
+        <div className='space-y-8 max-w-lg'>
+            <div className='space-y-4'>
+                <div className='text-xl font-semibold'>{APP_TITLE}</div>
+                <p className='font-thin text-sm'>{APP_DESCRIPTION}</p>
+            </div>
 
-            <div>
+            <hr />
+
+            <div className='space-y-4'>
                 <Turnstile
+                    options={{
+                        // adjust the size to your needs, invisible will even hide the widget
+                        size: 'invisible',
+                    }}
                     siteKey={CAPTCHA_SITE_KEY}
                     onError={() => setCaptchaStatus('error')}
                     onExpire={() => setCaptchaStatus('expired')}
                     onSuccess={handleCaptchaSuccess}
                 />
 
-                <div className='text-xs'>
-                    <div className="font-mono">Captcha Status: {catpchaStatus}</div>
-                    <div className="font-mono">Captcha Token: {captchaToken}</div>
-                </div>
+                <div className="font-mono text-xs">Captcha Status: {catpchaStatus}</div>
+                <div className="font-mono text-xs">Captcha Token: {captchaToken}</div>
             </div>
+
+            <hr />
 
             <div>
                 <button
-                    className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${!canSend ? 'opacity-25' : ''}`}
-                    disabled={!canSend}
+                    className={`w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 ${isLoading ? 'opacity-25' : ''}`}
+                    disabled={isLoading}
                     onClick={handleSend}
                 >
                     Transact with Contract
                 </button>
-
             </div>
-
 
             {Boolean(error) && <ErrorMessage>{error}</ErrorMessage>}
             <Transaction txId={txId} />

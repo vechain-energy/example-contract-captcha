@@ -5,15 +5,27 @@ compatibility_date = "2024-09-09"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
+# Turnstile Configuration
 CAPTCHA_SITE_SECRET_KEY = "1x0000000000000000000000000000000AA"
 VERIFY_ENDPOINT = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+# Signer Configuration
+#  store this secret securely and do not share it with anyone
+#  read https://developers.cloudflare.com/workers/configuration/secrets/#adding-secrets-to-your-project
+#  on how to use "wrangler secret"
 SIGNER_PRIVATE_KEY = "0xeee5b56c659542f88e9f14385e848a5a0176ad26fd1d0a78df434666736d4ff3"
 
-# The chain ID of the network to connect sign for:
-# 1176455790972829965191905223412607679856028701100105089447013101863 = TestNet
-# 14018334920824264832118464179726739019961432051877733167310318607178 = MainNet
+# How long a message will be valid for
+SIGNING_MAX_EXPIRY_SECONDS = 600
+
+# The chain ID of the network to sign for:
+#  TestNet: 1176455790972829965191905223412607679856028701100105089447013101863
+#  MainNet:14018334920824264832118464179726739019961432051877733167310318607178
 NETWORK_CHAIN_ID = "1176455790972829965191905223412607679856028701100105089447013101863"
 
-CONTRACT_ADDRESS="0x6D45D85488a21E09c2d2485BFA96bf2703B5228A"
+# Smart Contract Configuration
+#  The DOMAIN and VERSION are defined in the smart contracts contructor:
+#  constructor() EIP712("CaptchaVerifier", "1") {}
+CONTRACT_ADDRESS="0x2Eca0Ae09B1421F6cfAedAC1e4693b232552144f"
 CONTRACT_DOMAIN="CaptchaVerifier"
 CONTRACT_VERSION="1"

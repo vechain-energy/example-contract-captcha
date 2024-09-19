@@ -4,9 +4,32 @@ interface Env {
     CAPTCHA_SITE_SECRET_KEY: string;
     VERIFY_ENDPOINT: string;
     SIGNER_PRIVATE_KEY: string;
+    SIGNING_MAX_EXPIRY_SECONDS: number;
     NETWORK_CHAIN_ID: string;
 
     CONTRACT_ADDRESS: string;
     CONTRACT_DOMAIN: string;
     CONTRACT_VERSION: string;
+}
+
+
+interface TurnstileServerValidationResponse {
+    /** Indicate if the token validation was successful or not. */
+    success: boolean;
+    /** A list of errors that occurred. */
+    'error-codes': TurnstileServerValidationErrorCode[];
+    /** The ISO timestamp for the time the challenge was solved. */
+    challenge_ts?: string;
+    /** The hostname for which the challenge was served. */
+    hostname?: string;
+    /** The customer widget identifier passed to the widget on the client side. This is used to differentiate widgets using the same sitekey in analytics. Its integrity is protected by modifications from an attacker. It is recommended to validate that the action matches an expected value. */
+    action?: string;
+    /** The customer data passed to the widget on the client side. This can be used by the customer to convey state. It is integrity protected by modifications from an attacker. */
+    cdata?: string;
+    /** Whether or not an interactive challenge was issued by Cloudflare */
+    metadata?: {
+        interactive: boolean;
+    };
+    /** Error messages returned */
+    messages?: string[];
 }
